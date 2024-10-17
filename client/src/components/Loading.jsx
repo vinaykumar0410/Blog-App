@@ -7,7 +7,7 @@ const Loading = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 to-purple-200 flex items-center justify-center">
       <div className="text-center">
-        <h1 className="text-4xl font-bold text-purple-800 mb-6">Welcome to My Blog</h1>
+        <h1 className="text-4xl font-bold text-purple-800 mb-6">Welcome to Blog Hive</h1>
         <p className="text-xl text-purple-600 mb-8">Discover amazing stories and share your own</p>
         <div className="space-x-4">
           <button
