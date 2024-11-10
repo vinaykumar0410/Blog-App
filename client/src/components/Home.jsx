@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiEdit, FiTrash2, FiLogOut, FiPlusCircle } from 'react-icons/fi';
 import axios from 'axios';
+import FadeLoader from 'react-spinners/FadeLoader';
+import Swal from 'sweetalert2';
 
 const Home = () => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,12 +17,12 @@ const Home = () => {
 
     const fetchData = async () => {
       try {
-        const userResponse = await axios.get('http://localhost:5000/home', {
+        const userResponse = await axios.get('https://bloghive-d3g9.onrender.com/home', {
           headers: { 'x-token': token }
         });
         setUser(userResponse.data.user);
 
-        const blogsResponse = await axios.get('http://localhost:5000/blogs', {
+        const blogsResponse = await axios.get('https://bloghive-d3g9.onrender.com/blogs', {
           headers: { 'x-token': token }
         });
         setBlogs(blogsResponse.data.blogs);
@@ -34,11 +37,25 @@ const Home = () => {
 
   const handleDelete = async (id) => {
     try {
-      const res = await axios.delete(`http://localhost:5000/blogs/${id}`, {
+      setLoading(true);
+      const res = await axios.delete(`https://bloghive-d3g9.onrender.com/blogs/${id}`, {
         headers: { 'x-token': token }
       });
       setBlogs(res.data.blogs);
+      setLoading(false);
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Blog post deleted successfully.'
+      });
     } catch (error) {
+      setLoading(false);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Failed to delete the blog post. Please try again.'
+    });
+    
       console.error("Error deleting blog:", error);
     }
   };
@@ -48,6 +65,15 @@ const Home = () => {
       navigate(`/updateblog/${blogId}`);
     }
   };
+
+  if(loading) {
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-700 flex flex-col items-center justify-center text-white space-y-4">
+            <FadeLoader color="#ffffff" />
+            <p className="text-lg font-semibold animate-pulse">Please wait, deleting your blog post...</p>
+        </div>
+    );
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-purple-300 to-purple-200">

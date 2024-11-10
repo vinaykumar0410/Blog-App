@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate, Link } from 'react-router-dom';
+import FadeLoader from 'react-spinners/FadeLoader';
 
 const Register = () => {
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
     const [user, setUser] = useState({
         username: '',
         email: '',
@@ -18,8 +20,10 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post(`http://localhost:5000/register`, user)
+        setLoading(true);
+        axios.post(`https://bloghive-d3g9.onrender.com/register`, user)
             .then((response) => {
+                setLoading(false);
                 Swal.fire({
                     icon: 'success',
                     title: 'Success',
@@ -28,6 +32,7 @@ const Register = () => {
                 navigate("/login");
             })
             .catch((err) => {
+                setLoading(false);
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
@@ -35,6 +40,15 @@ const Register = () => {
                 });
             });
     };
+
+    if(loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-700 flex flex-col items-center justify-center text-white space-y-4">
+                <FadeLoader color="#ffffff" />
+                <p className="text-lg font-semibold animate-pulse">Please wait, creating your account...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-r from-purple-400 via-purple-600 to-purple-800 flex items-center justify-center px-4 sm:px-6 lg:px-8">

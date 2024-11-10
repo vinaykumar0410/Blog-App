@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { FiEdit3, FiArrowLeft } from 'react-icons/fi';
+import FadeLoader from 'react-spinners/FadeLoader';
 
 const CreateBlog = () => {
+    const [loading, setLoading] = useState(false);
     const [blog, setBlog] = useState({
         title: '',
         content: ''
@@ -17,12 +19,14 @@ const CreateBlog = () => {
 
     const submitHandler = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:5000/blogs', blog, {
+        setLoading(true);
+        axios.post('https://bloghive-d3g9.onrender.com/blogs', blog, {
             headers: {
                 'x-token': localStorage.getItem('token')
             }
         })
         .then((res) => {
+            setLoading(false);
             Swal.fire({
                 icon: 'success',
                 title: 'Success',
@@ -35,6 +39,7 @@ const CreateBlog = () => {
             navigate('/home');
         })
         .catch((err) => {
+            setLoading(false);
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
@@ -42,6 +47,15 @@ const CreateBlog = () => {
             });
         });
     };
+
+    if(loading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-500 to-purple-700 flex flex-col items-center justify-center text-white space-y-4">
+                <FadeLoader color="#ffffff" />
+                <p className="text-lg font-semibold animate-pulse">Please wait, creating your blog post...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-purple-50 py-12 px-4 sm:px-6 lg:px-8">
